@@ -1,0 +1,13 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "seguimiento.oscarsoft",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "repartidor",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "oscarsoft",
+  "description": "app para entrega de pedidos"
+}
