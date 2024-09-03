@@ -31,22 +31,10 @@
         </div>
         <div class="col-md-4 d-flex align-items-end">
             <button id="calculate-distance" class="btn btn-primary">Calcular Distancia</button>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <span id="distance-result" class="h5"></span>
+            <span id="distance-result" class="ms-3 h5"></span>
         </div>
     </div>
     <div id="map"></div>
-    <div class="row mt-3">
-        <div class="col-md-4">
-            <input type="text" class="form-control" id="user-name" placeholder="Ingresa tu nombre">
-        </div>
-        <div class="col-md-4">
-            <button id="share-location" class="btn btn-success">Compartir Ubicación en Tiempo Real</button>
-        </div>
-    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script>
@@ -104,28 +92,14 @@
                         markerStart = L.marker(startLatLng).addTo(map).bindPopup('Inicio: ' + startAddress).openPopup();
                         markerEnd = L.marker(endLatLng).addTo(map).bindPopup('Destino: ' + endAddress).openPopup();
 
-                        // Hacer la solicitud de ruta a OpenRouteService
-                        var routeUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=YOUR_OPENROUTESERVICE_API_KEY&start=${startLatLng.lng},${startLatLng.lat}&end=${endLatLng.lng},${endLatLng.lat}`;
+                        routeLayer = L.polyline([startLatLng, endLatLng], { color: 'blue' }).addTo(map);
 
-                        fetch(routeUrl)
-                            .then(response => response.json())
-                            .then(data => {
-                                var coords = data.features[0].geometry.coordinates;
-                                var latLngs = coords.map(coord => L.latLng(coord[1], coord[0]));
+                        // Ajustar el zoom para mostrar toda la ruta
+                        map.fitBounds(routeLayer.getBounds());
 
-                                routeLayer = L.polyline(latLngs, { color: 'blue' }).addTo(map);
-
-                                // Ajustar el zoom para mostrar toda la ruta
-                                map.fitBounds(routeLayer.getBounds());
-
-                                // Calcular y mostrar la distancia
-                                var distance = data.features[0].properties.segments[0].distance / 1000; // Convertir a km
-                                document.getElementById('distance-result').innerText = 'Distancia: ' + distance.toFixed(2) + ' km';
-                            })
-                            .catch(error => {
-                                console.error('Error al calcular la ruta:', error);
-                                alert('No se pudo calcular la ruta.');
-                            });
+                        // Calcular y mostrar la distancia
+                        var distance = startLatLng.distanceTo(endLatLng) / 1000; // Convertir a km
+                        document.getElementById('distance-result').innerText = 'Distancia: ' + distance.toFixed(2) + ' km';
                     });
                 });
             } else {
@@ -133,28 +107,7 @@
             }
         }
 
-        // Función para compartir la ubicación en tiempo real vía WhatsApp
-        function shareLocation() {
-            var userName = document.getElementById('user-name').value;
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(function(position) {
-                    var lat = position.coords.latitude;
-                    var lon = position.coords.longitude;
-                    var locationUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=16/${lat}/${lon}`;
-                    var whatsappMessage = `Hola, soy ${userName}, estoy en camino a llevar tu pedido. Puedes seguir mi ubicación en tiempo real aquí: ${locationUrl}`;
-                    var whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
-                    window.open(whatsappUrl, '_blank');
-                }, function(error) {
-                    console.error('Error al obtener la ubicación:', error);
-                    alert('No se pudo obtener la ubicación en tiempo real.');
-                });
-            } else {
-                alert('La geolocalización no es compatible con este navegador.');
-            }
-        }
-
         document.getElementById('calculate-distance').addEventListener('click', calculateDistance);
-        document.getElementById('share-location').addEventListener('click', shareLocation);
     </script>
 </body>
 </html>
