@@ -131,7 +131,7 @@
                 navigator.geolocation.getCurrentPosition(function(position) {
                     var latitude = position.coords.latitude;
                     var longitude = position.coords.longitude;
-                    var locationUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                    var locationUrl = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=15/${latitude}/${longitude}`;
                     var message = `Hola, soy ${userName}. Estoy en camino a llevar tu pedido. Sigue mi ubicación en tiempo real aquí: ${locationUrl}`;
                     var whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
                     window.open(whatsappUrl, '_blank');
